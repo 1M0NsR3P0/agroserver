@@ -34,11 +34,11 @@ def insert(collection_name):
 
     print(f"Inserting into collection '{collection_name}':", data)
     result = collection.insert_one(data)
-    return jsonify({"inserted_id": str(result.inserted_id)})
+    return jsonify({"status":"success"})
 
 @app.route("/data/<collection_name>/", methods=['GET'])
 def fetcher(collection_name):
-    time.sleep(3)
+    # time.sleep(3)
     db = client["mydatabase"]
     collection = db[collection_name]
 
