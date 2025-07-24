@@ -9,9 +9,9 @@ import time
 
 app = Flask(__name__)
 # CORS(app)
-CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
+# CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 # CORS(app, resources={r"/*": {"origins": "http://localhost:5500"}}, supports_credentials=True)
-# CORS(app, resources={r"/*": {"origins": ["http://localhost:5500", "http://127.0.0.1:5500"]}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": ["https://agroserver-mdz5.onrender.com", "http://127.0.0.1:5500"]}}, supports_credentials=True)
 
 
 uri = "mongodb+srv://imon:imon55@c0.ckcrbdq.mongodb.net/?retryWrites=true&w=majority&appName=C0"
