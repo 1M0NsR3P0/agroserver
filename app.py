@@ -4,14 +4,12 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from bson import ObjectId
 
-import time
-
 
 app = Flask(__name__)
-# CORS(app)
+CORS(app)
 # CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 # CORS(app, resources={r"/*": {"origins": "http://localhost:5500"}}, supports_credentials=True)
-CORS(app, resources={r"/*": {"origins": ["https://agroserver-mdz5.onrender.com", "http://127.0.0.1:5500","*","https://1m0nsr3p0.github.io"]}}, supports_credentials=True)
+# CORS(app, resources={r"/*": {"origins": ["http://localhost:5500", "http://127.0.0.1:5500"]}}, supports_credentials=True)
 
 
 uri = "mongodb+srv://imon:imon55@c0.ckcrbdq.mongodb.net/?retryWrites=true&w=majority&appName=C0"
@@ -26,6 +24,8 @@ except Exception as e:
 def home():
     print("server started!!")
     return "server started"
+
+
 @app.route("/insert/<collection_name>/", methods=['POST'])
 def insert(collection_name):
     db = client["mydatabase"]
@@ -35,9 +35,25 @@ def insert(collection_name):
     if not data:
         return jsonify({"error": "No JSON data provided"}), 400
 
-    print(f"Inserting into collection '{collection_name}':", data)
+    # print(f"Inserting into collection '{collection_name}':", data)
     result = collection.insert_one(data)
     return jsonify({"status":"success"})
+
+
+@app.route("/edit/<collection_name>/", methods=['POST'])
+def update(collection_name):
+    db = client["mydatabase"]
+    collection = db[collection_name]
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "No JSON data provided"}), 400
+
+    id = data.get("id")
+    edit = data.get("amount")
+    result = collection.update_one({"_id": ObjectId(id)}, {"$set": data})
+    if(result):
+        return jsonify({"status":"success"})
 
 @app.route("/data/<collection_name>/", methods=['GET'])
 def fetcher(collection_name):
@@ -51,19 +67,6 @@ def fetcher(collection_name):
         doc["_id"] = str(doc["_id"])
 
     return jsonify(documents)
-
-
-
-@app.route("/edit/<collection_name>/<id>/", methods=["PUT", "OPTIONS"])
-def updater(collection_name, id):
-    if request.method == "OPTIONS":
-        return '', 200
-    collection = db[collection_name]
-    data = request.json
-    result = collection.update_one({"_id": ObjectId(id)}, {"$set": data})
-    if result.matched_count:
-        return jsonify({"status": "updated"})
-    return jsonify({"error": "not found"}), 404
 
 @app.route("/delete/<collection_name>/<id>/", methods=["DELETE"])
 def deleter(collection_name, id):
