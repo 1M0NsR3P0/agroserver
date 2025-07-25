@@ -76,6 +76,17 @@ def deleter(collection_name, id):
         return jsonify({"status": "deleted"})
     return jsonify({"error": "not found"}), 404
 
+@app.route("/reset/<collection_name>/", methods=["GET"])
+def delCollection(collection_name):
+    collection = db[collection_name]
+    result = db.drop_collection(collection_name)
+    return jsonify({"error": "not found"}), 404
+
+@app.route('/reset/all/', methods=['GET'])
+def delete_all_collections():
+    for collection_name in db.list_collection_names():
+        db.drop_collection(collection_name)
+    return "All collections deleted."
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=10000)
