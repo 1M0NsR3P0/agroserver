@@ -70,6 +70,7 @@ def fetcher(collection_name):
 
 @app.route("/delete/<collection_name>/<id>/", methods=["DELETE"])
 def deleter(collection_name, id):
+    db = client["mydatabase"]
     collection = db[collection_name]
     result = collection.delete_one({"_id": ObjectId(id)})
     if result.deleted_count:
@@ -78,15 +79,25 @@ def deleter(collection_name, id):
 
 @app.route("/reset/<collection_name>/", methods=["GET"])
 def delCollection(collection_name):
-    collection = db[collection_name]
-    result = db.drop_collection(collection_name)
-    return jsonify({"error": "not found"}), 404
+    db = client["mydatabase"]
+    if collection_name in db.list_collection_names():
+        db.drop_collection(collection_name)
+        return jsonify({"msg": f"Collection '{collection_name}' deleted successfully!"}), 200
+    else:
+        return jsonify({"msg": f"Collection '{collection_name}' not found or already deleted!"}), 404
 
+# Delete all collections in the database
 @app.route('/reset/all/', methods=['GET'])
 def delete_all_collections():
-    for collection_name in db.list_collection_names():
+    db = client["mydatabase"]
+    collection_names = db.list_collection_names()
+    if not collection_names:
+        return jsonify({"msg": "No collections found to delete."}), 404
+
+    for collection_name in collection_names:
         db.drop_collection(collection_name)
-    return "All collections deleted."
+
+    return jsonify({"msg": "All collections deleted successfully!"}), 200
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=10000)
