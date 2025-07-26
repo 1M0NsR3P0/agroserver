@@ -51,7 +51,7 @@ def update(collection_name):
 
     id = data.get("id")
     edit = data.get("amount")
-    result = collection.update_one({"_id": ObjectId(id)}, {"$set": edit})
+    result = collection.update_one({"_id": ObjectId(id)}, {"$set": {"amount":edit}})
     if(result):
         return jsonify({"status":"success"})
 
