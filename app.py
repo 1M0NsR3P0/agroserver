@@ -3,6 +3,9 @@ from pymongo.server_api import ServerApi
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from bson import ObjectId
+from flask import request
+import smtplib
+from email.message import EmailMessage
 
 
 app = Flask(__name__)
@@ -98,6 +101,33 @@ def delete_all_collections():
         db.drop_collection(collection_name)
 
     return jsonify({"msg": "All collections deleted successfully!"}), 200
+
+
+
+
+
+
+
+@app.route("/mail", methods=["POST"])
+def send_email():
+    data = request.json
+    msg = EmailMessage()
+    msg.set_content(data["message"])
+    msg["Subject"] = data["subject"]
+    msg["From"] = "naimonchy@gmail.com"
+    msg["To"] = data["to"]
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        server.login("naimonchy@gmail.com", "befjbtrkoutrrhta")
+        server.send_message(msg)
+
+    return {"msg": "Email sent!"}, 200
+
+
+
+
+
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=10000)
