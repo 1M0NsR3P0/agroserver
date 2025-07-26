@@ -23,7 +23,7 @@ except Exception as e:
 @app.route('/')
 def home():
     print("server started!!")
-    return "server started"
+    return "done"
 
 
 @app.route("/insert/<collection_name>/", methods=['POST'])
